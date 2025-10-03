@@ -20,14 +20,14 @@ Installation
 Cloner/copier le dossier du projet sur la machine.
 
 Créer un environnement virtuel (recommandé) :
-
+bash
 python -m venv venv
 source venv/bin/activate   # Linux/macOS
 venv\Scripts\activate    # Windows PowerShell
 
 
 Installer les dépendances :
-
+bash
 pip install -r requirements.txt
 
 Fichiers principaux
@@ -43,7 +43,7 @@ pyfirewall.log : fichier de logs généré par le script.
 Configuration
 
 Exemple minimal de fw_rules.json :
-
+json
 {
   "blacklist_ips": ["1.2.3.4"],
   "blacklist_domains": ["bad.example.com"],
@@ -66,12 +66,12 @@ block_processes_by_name : noms (ou fragment) de processus à terminer.
 Utilisation
 
 Sur Linux (exécuter en root) :
-
+bash
 sudo python3 pyfirewall.py
 
 
 Sur Windows (PowerShell en tant qu'administrateur) :
-
+powerShell
 python pyfirewall.py
 
 
@@ -81,7 +81,7 @@ Les événements critiques sont préfixés par CRITICAL dans le fichier et affic
 Exécution automatique au démarrage
 
 Linux (systemd) : créer un service systemd qui lance :
-
+bash
 python3 /chemin/vers/pyfirewall.py
 
 
@@ -90,7 +90,7 @@ en root.
 Windows : utiliser le Planificateur de tâches (Task Scheduler) ou un wrapper comme NSSM pour exécuter le script au démarrage en tant qu'administrateur.
 
 Note : rendre persistant les règles iptables peut nécessiter :
-
+bash
 iptables-save
 iptables-restore
 
@@ -112,5 +112,5 @@ Journalisation et alertes
 Les événements critiques sont marqués CRITICAL dans pyfirewall.log.
 
 Le format des lignes de log est ISO8601 UTC timestamp suivi du message, par exemple :
-
+text
 [2025-10-03T12:00:00Z] CRITICAL: Remote IP 1.2.3.4 is blacklisted.
