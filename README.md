@@ -1,0 +1,116 @@
+README - pyfirewall
+Description
+
+pyfirewall est un outil simple en Python qui surveille les connexions sortantes et applique des blocages au niveau du système (Windows: netsh advfirewall, Linux: iptables). Il permet aussi de tuer des processus listés dans la configuration et écrit des logs avec les événements critiques tagués CRITICAL.
+
+Le script n'est pas un firewall professionnel. Il sert d'outil d'appoint pour des tests locaux et pour apprendre.
+
+Prérequis
+
+Python 3.8+
+
+pip
+
+Droits administrateur / root pour appliquer des règles système
+
+Fichier des dépendances fourni: requirements.txt (contient psutil>=5.9.0).
+
+Installation
+
+Cloner/copier le dossier du projet sur la machine.
+
+Créer un environnement virtuel (recommandé) :
+ ```bash
+python -m venv venv
+source venv/bin/activate   # Linux/macOS
+venv\Scripts\activate    # Windows PowerShell
+ ```
+
+Installer les dépendances :
+ ```bash
+pip install -r requirements.txt
+ ```
+Fichiers principaux
+
+pyfirewall.py : script principal.
+
+fw_rules.json : configuration (liste d'IP, ports, domaines, noms de processus à bloquer).
+
+requirements.txt : dépendances Python.
+
+pyfirewall.log : fichier de logs généré par le script.
+
+Configuration
+
+Exemple minimal de fw_rules.json :
+json
+{
+  "blacklist_ips": ["1.2.3.4"],
+  "blacklist_domains": ["bad.example.com"],
+  "blacklist_ports": [6667],
+  "auto_block_on_connect": true,
+  "block_processes_by_name": ["suspicious.exe"]
+}
+
+
+blacklist_ips : adresses IPv4 à bloquer.
+
+blacklist_domains : domaines résolus au démarrage et ajoutés à blacklist_ips si résolus.
+
+blacklist_ports : ports distants qui déclenchent un blocage.
+
+auto_block_on_connect : si true, le script tente d'ajouter une règle OS automatiquement.
+
+block_processes_by_name : noms (ou fragment) de processus à terminer.
+
+Utilisation
+
+Sur Linux (exécuter en root) :
+ ```bash
+sudo python3 pyfirewall.py
+ ```
+
+Sur Windows (PowerShell en tant qu'administrateur) :
+ ```powerShell
+python pyfirewall.py
+ ```
+
+Le script écrit des logs dans pyfirewall.log.
+Les événements critiques sont préfixés par CRITICAL dans le fichier et affichés en rouge dans la console (si le terminal supporte les codes ANSI).
+
+Exécution automatique au démarrage
+
+Linux (systemd) : créer un service systemd qui lance :
+ ```bash
+python3 /chemin/vers/pyfirewall.py
+ ```
+
+en root.
+
+Windows : utiliser le Planificateur de tâches (Task Scheduler) ou un wrapper comme NSSM pour exécuter le script au démarrage en tant qu'administrateur.
+
+Note : rendre persistant les règles iptables peut nécessiter :
+ ```bash
+iptables-save
+iptables-restore
+ ```
+
+selon la distribution.
+
+Limites et sécurité
+
+Le script utilise iptables pour Linux et netsh advfirewall pour Windows. Si le système utilise nftables (Linux moderne) ou autres solutions, il faudra adapter le code.
+
+L'utilisation sans droits administrateur empêchera l'ajout de règles système.
+
+Ne pas utiliser ce script pour des actions offensives ou illégales.
+
+Pour une protection sérieuse, préférer des solutions dédiées (firewalld, nftables, pare-feu matériel, solutions commerciales).
+
+Journalisation et alertes
+
+Les événements critiques sont marqués CRITICAL dans pyfirewall.log.
+
+Le format des lignes de log est ISO8601 UTC timestamp suivi du message, par exemple :
+ ```text
+[2025-10-03T12:00:00Z] CRITICAL: Remote IP 1.2.3.4 is blacklisted. ```
